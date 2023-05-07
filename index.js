@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri =
-  "mongodb+srv://eftekharulalam237:gvdCgF3OmhMtpBbX@cluster0.v1phe5i.mongodb.net/?retryWrites=true&w=majority";
+  "mongodb+srv://eftekharulalam237:XXXXXXXXX@cluster0.v1phe5i.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -46,6 +46,27 @@ async function run() {
       const user = req.body;
       console.log("new user", user);
       const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const user = req.body;
+      console.log(id, user);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedUser = {
+        $set: {
+          name: user.name,
+          email: user.email,
+        },
+      };
+
+      const result = await userCollection.updateOne(
+        filter,
+        updatedUser,
+        options
+      );
       res.send(result);
     });
 
